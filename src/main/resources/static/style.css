@@ -1,0 +1,174 @@
+body {
+    position: relative;
+    margin: 0px;
+    font-family: helvetica;
+    display: flex;
+}
+
+header {
+    border-bottom: 1px solid #acacac;
+    position: fixed;
+    text-align: center;
+    padding: 5px;
+    width: 100%;
+    background: crimson;
+    z-index: 2;
+}
+
+aside {
+    width: 250px;
+    height: 100%;
+    padding-top: 42px;
+    display: inline-block;
+    border-right: 1px solid grey;
+}
+
+article {
+    display: inline-block;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+header>* {
+    padding: 5px;
+}
+
+header>input {
+    border: 2px solid #a50a25;
+}
+
+header>*:focus {
+    border-color: #500713;
+    outline: none;
+}
+
+header>button {
+    background: white;
+    border: 2px solid #a50a25;
+}
+
+ul {
+    list-style: none;
+    padding: 0px;
+    margin: 0px;
+}
+
+li {
+    font-size: 12pt;
+    padding: 7px 20px;
+    position: relative;
+}
+
+li.hoverable {
+    cursor: pointer;
+}
+
+li.hoverable:hover {
+    background: #F9FCFF;
+}
+
+li>.count {
+    border-radius: 100%;
+    background: crimson;
+    color: white;
+    position: absolute;
+    right: 10px;
+    padding: 5px;
+    line-height: 8px;
+    font-size: 8pt;
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    text-align: center;
+}
+
+aside>h5 {
+    margin: 0px;
+    padding: 10px;
+}
+
+#dialog {
+    border-radius: 4px;
+    border: 1px solid #bbb;
+    width: 95%;
+    font-size: 0pt;
+    height: 90%;
+}
+
+#dialog>span:first-child {
+    width: 99%;
+    display: inline-block;
+    text-align: center;
+    position: relative;
+    margin: 0.5%;
+    padding: 8px 0px;
+    background: crimson;
+    color: white;
+    font-size: 10pt;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+}
+
+#dialog>span>span {
+    text-transform: capitalize;
+}
+
+#dialog>#message-board {
+    height: 90%;
+    overflow-y: auto;
+}
+
+#dialog>#message-board>div {
+    font-size: 10pt;
+    padding: 6px 15px;
+    border-bottom: 1px solid #999;
+}
+
+#dialog>#message-board>div:nth-child(even) {
+    background: #F9FCFF;
+}
+
+#dialog>#message-board>div>:first-child {
+    display: block;
+    color: gray;
+    margin-bottom: 10px;
+}
+
+#dialog>#message {
+    width: 85%;
+    border: 0px;
+    padding: 5px;
+    margin-left: 5px;
+    margin-top: 5px;
+    font-family: helvetica;
+    vertical-align: top;
+    resize: none;
+}
+#dialog>#message:focus {
+    outline: 0px;
+}
+
+#dialog>#send {
+    width: 10%;
+    height: 4%;
+    margin: 4px;
+    border: 0px;
+    color: white;
+    background: crimson;
+    vertical-align: top;
+    border-radius: 2px;
+    cursor: pointer;
+}
+
+#dialog>hr {
+    border: 0px;
+    border-top: 1px solid #bbb;
+}
+
+.onlineuser {
+    margin-left: 5px;
+    width: 12px;
+    height: 12px;
+}
