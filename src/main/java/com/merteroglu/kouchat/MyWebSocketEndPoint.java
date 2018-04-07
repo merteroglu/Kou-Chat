@@ -26,13 +26,15 @@ public class MyWebSocketEndPoint {
         clients.put(newUserName,session);
 
         session.getUserProperties().put(USERNAME_KEY,newUserName);
-        session.getUserProperties().put("Online",1);
+        session.getUserProperties().put("State","Online");
         String response = "newUser|" + String.join("|",clients.keySet());
         session.getBasicRemote().sendText(response);
 
         for (Session client : clients.values()){
             if(client == session) continue;
-            client.getBasicRemote().sendText("newUser|" + newUserName + "|Online|" + 1);
+
+            String state = (String) client.getUserProperties().get("State");
+            client.getBasicRemote().sendText("newUser|" + newUserName);
         }
 
     }
@@ -60,7 +62,7 @@ public class MyWebSocketEndPoint {
     @OnClose
     public void onClose(Session session) throws Exception{
         String userName = (String) session.getUserProperties().get(USERNAME_KEY);
-
+        session.getUserProperties().put("State","Offline");
         //clients.remove(userName);
         for(Session client : clients.values()){
             client.getBasicRemote().sendText("removeUser|"+ userName);

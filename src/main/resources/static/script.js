@@ -26,8 +26,6 @@ disconnectBtnEl.onclick = disconnect;
 function connect() {
     //socket = new WebSocket("ws://"+ location.hostname + ':' + location.port + location.pathname + "chat?username=" + usernameInputEl.value);
     socket = new WebSocket("ws://localhost:8080/" + "chat?username=" + usernameInputEl.value);
-    //socket = new WebSocket("ws://"+ location.hostname + location.pathname + "chat?username=" + usernameInputEl.value);
-    console.log("bağlandı");
     socket.onopen = socketOnOpen;
     socket.onmessage = socketOnMessage;
     socket.onclose = socketOnClose;
@@ -39,7 +37,6 @@ function disconnect() {
 }
 
 function socketOnOpen(e) {
-    console.log("socket opened");
     usernameInputEl.disabled = true;
     connectBtnEl.disabled = true;
     disconnectBtnEl.disabled = false;
@@ -48,7 +45,8 @@ function socketOnOpen(e) {
 function socketOnMessage(e) {
     var eventName = e.data.substr(0,e.data.indexOf("|"));
     var data = e.data.substr(e.data.indexOf("|") + 1);
-
+    console.log("event name : " + eventName);
+    console.log("data :" + data);
     var fn;
     if(eventName == 'newUser') fn = newUser;
     else if(eventName == 'removeUser') fn = removeUser;
@@ -70,7 +68,14 @@ function socketOnClose(e) {
 function newUser() {
     if(arguments.length == 1 && arguments[0] == "") return;
     var usernameList = arguments;
-    console.log("arguments 0 : " + arguments[0]);
+    var oldUsernameList = usernameListEl.children;
+    for(var i = 0; i < usernameList.length;i++){
+        for(var j = 0; j < oldUsernameList.length;j++){
+            if(usernameList[i] == oldUsernameList[j].textContent){
+                usernameListEl.removeChild(oldUsernameList[j]);
+            }
+        }
+    }
 
     var documentFragment = document.createDocumentFragment();
     for(var i = 0; i < usernameList.length;i++){
@@ -111,6 +116,16 @@ function removeUser(removedUserName) {
         var username = usernameList[i].textContent;
         if(username == removedUserName){
             usernameListEl.removeChild(usernameList[i]);
+            var documentFragment = document.createDocumentFragment();
+            var liEl = document.createElement("li");
+            var icon = document.createElement("img");
+            icon.src = "/img/ic_offline.png";
+            icon.className = "onlineuser";
+            liEl.id = username;
+            liEl.textContent = username;
+            liEl.appendChild(icon);
+            documentFragment.appendChild(liEl);
+            usernameListEl.appendChild(documentFragment);
         }
     }
 }
