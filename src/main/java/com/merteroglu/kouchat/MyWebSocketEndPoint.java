@@ -1,7 +1,5 @@
 package com.merteroglu.kouchat;
 
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.socket.server.standard.SpringConfigurator;
 
 import javax.websocket.OnClose;
 import javax.websocket.OnMessage;
@@ -28,12 +26,13 @@ public class MyWebSocketEndPoint {
         clients.put(newUserName,session);
 
         session.getUserProperties().put(USERNAME_KEY,newUserName);
+        session.getUserProperties().put("Online",1);
         String response = "newUser|" + String.join("|",clients.keySet());
         session.getBasicRemote().sendText(response);
 
         for (Session client : clients.values()){
             if(client == session) continue;
-            client.getBasicRemote().sendText("newUser|" + newUserName);
+            client.getBasicRemote().sendText("newUser|" + newUserName + "|Online|" + 1);
         }
 
     }
@@ -61,6 +60,7 @@ public class MyWebSocketEndPoint {
     @OnClose
     public void onClose(Session session) throws Exception{
         String userName = (String) session.getUserProperties().get(USERNAME_KEY);
+
         //clients.remove(userName);
         for(Session client : clients.values()){
             client.getBasicRemote().sendText("removeUser|"+ userName);

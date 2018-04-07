@@ -70,6 +70,7 @@ function socketOnClose(e) {
 function newUser() {
     if(arguments.length == 1 && arguments[0] == "") return;
     var usernameList = arguments;
+    console.log("arguments 0 : " + arguments[0]);
 
     var documentFragment = document.createDocumentFragment();
     for(var i = 0; i < usernameList.length;i++){
