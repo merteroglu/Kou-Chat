@@ -46,8 +46,8 @@ function socketOnMessage(e) {
     var data = JSON.parse(e.data);
 
     console.log("data name : " + data.userName);
-    console.log("data ip : " + data.ip);
-    console.log("data isOnline : " + data.state);
+    console.log("data func : " + data.func);
+
 
     if(data.func == 'newUser') newUser(data);
     else if(data.func == 'removeUser') removeUser(data);
@@ -67,7 +67,6 @@ function socketOnClose(e) {
 
 function newUser(data) {
     var userInfo = data;
-    console.log("arguments",data);
     var oldUsernameList = usernameListEl.children;
         for(var i = 0; i < oldUsernameList.length;i++){
             if(userInfo.userName == oldUsernameList[i].id){
@@ -81,7 +80,6 @@ function newUser(data) {
     var pName = document.createElement("p");
     icon.src = "/img/ic_online.png";
     icon.className = "onlineuser";
-    console.log("pname : " + userInfo.userName);
     pName.textContent = userInfo.userName;
     liEl.id = userInfo.userName;
     liEl.className = "user-list";
@@ -135,13 +133,12 @@ function removeUser(removedUserName) {
             var liEl = document.createElement("li");
             var icon = document.createElement("img");
             var pName = document.createElement("p");
-            icon.src = "/img/ic_online.png";
+            icon.src = "/img/ic_offline.png";
             icon.className = "onlineuser";
             pName.textContent = username;
             liEl.id = username;
             liEl.className = "user-list";
             liEl.onclick = chatToFn(username);
-            if(username != usernameInputEl.value) liEl.classList.add('hoverable');
             liEl.appendChild(icon);
             liEl.appendChild(pName);
             documentFragment.appendChild(liEl);

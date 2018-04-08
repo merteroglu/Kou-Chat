@@ -30,8 +30,11 @@ public class MyWebSocketEndPoint {
 
         User newUser = new User(newUserName,newIp,newPp);
 
-        if(clients.containsKey(newUser)){
-            clients.get(newUser).getUserProperties().put("state","Online");
+        long count = clients.keySet().stream().filter(user -> user.getUserName().equals(newUser.getUserName())).count();
+
+        if(count > 0){
+            clients.get(clients.keySet().stream().filter(user -> user.getUserName().equals(newUser.getUserName()))).getUserProperties().put("state","Online");
+            session = clients.get(clients.keySet().stream().filter(user -> user.getUserName().equals(newUser.getUserName())));
         }else{
             clients.put(newUser,session);
             session.getUserProperties().put(USERNAME_KEY,newUserName);
@@ -103,6 +106,7 @@ public class MyWebSocketEndPoint {
         session.getUserProperties().put("state","Offline");
         clients.keySet().stream().filter(user -> user.getUserName() == userName).collect(Collectors.toList()).get(0).setOnline(false);
         for(Session client : clients.values()){
+            if(client == session) continue;
             client.getBasicRemote().sendText(String.valueOf(new JSONObject()
                     .put("func","removeUser")
                     .put("userName",userName)
