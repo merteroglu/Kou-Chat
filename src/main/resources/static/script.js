@@ -48,10 +48,9 @@ function socketOnMessage(e) {
     console.log("data name : " + data.userName);
     console.log("data func : " + data.func);
 
-
     if(data.func == 'newUser') newUser(data);
     else if(data.func == 'removeUser') removeUser(data);
-    else if(data.func == 'message') getMessage(data);
+    else if(data.func == 'message') getMessage(data.sender,data.messageContent,data.destTo);
 
 }
 
@@ -92,36 +91,54 @@ function newUser(data) {
 }
 
 function getMessage(sender, message, to) {
+    console.log("destTo : " + to);
     to = to || sender;
+    console.log("to : " + to);
+    console.log("sender : " + sender);
+    console.log("messageContent : " + message);
+    console.log("getMessage chatTo : " + chatTo);
 
-    if(chatTo == to){
+    if(sender == usernameInputEl.value){
         var newChatEl = createNewChat(sender,message);
         messageBoardEl.appendChild(newChatEl);
+        if(chatRoom[sender]) chatRoom[sender].push(newChatEl);
+        else chatRoom[sender] = [newChatEl];
+        return;
+    }
+
+    var newChatEl = createNewChat(sender,message);
+
+    if(chatTo == sender){
+        messageBoardEl.appendChild(newChatEl);
     }else{
-        var toEl = usernameListEl.querySelector('#' + to);
+        var toEl = usernameListEl.querySelector('#' + sender);
         addCountMessage(toEl);
     }
 
-    if(chatRoom[to]) chatRoom[to].push(newChatEl);
-    else chatRoom[to] = [newChatEl];
+    if(chatRoom[sender]) chatRoom[sender].push(newChatEl);
+    else chatRoom[sender] = [newChatEl];
 
 }
 
+/*
 function getMessage(data) {
+    console.log("destTo : " + data.destTo);
+    console.log("sender : " + data.sender);
+    console.log("messageContent : " + data.messageContent);
     data.destTo = data.destTo || data.sender;
 
     if(chatTo == data.destTo){
         var newChatEl = createNewChat(data.sender,data.messageContent);
         messageBoardEl.appendChild(newChatEl);
     }else{
-        var toEl = usernameListEl.querySelector('#' + data.destTo);
-        addCountMessage(toEl);
+        //var toEl = usernameListEl.querySelector('#' + data.destTo);
+        //addCountMessage(toEl);
     }
 
     if(chatRoom[data.destTo]) chatRoom[data.destTo].push(newChatEl);
     else chatRoom[data.destTo] = [newChatEl];
 
-}
+}*/
 
 function removeUser(removedUserName) {
     var usernameList = usernameListEl.children;
@@ -183,7 +200,7 @@ chatToAllEl.onclick = chatToFn('all');
 function sendMessage() {
     var message = messageInputEl.value;
     if(message == '') return;
-
+    console.log("send message chatTo : " + chatTo + " message : " + message);
     socket.send(chatTo + '|' + message);
 
     messageInputEl.value = '';

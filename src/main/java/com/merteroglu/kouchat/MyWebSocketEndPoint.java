@@ -33,15 +33,20 @@ public class MyWebSocketEndPoint {
         long count = clients.keySet().stream().filter(user -> user.getUserName().equals(newUser.getUserName())).count();
 
         if(count > 0){
-            clients.get(clients.keySet().stream().filter(user -> user.getUserName().equals(newUser.getUserName()))).getUserProperties().put("state","Online");
-            session = clients.get(clients.keySet().stream().filter(user -> user.getUserName().equals(newUser.getUserName())));
-        }else{
-            clients.put(newUser,session);
-            session.getUserProperties().put(USERNAME_KEY,newUserName);
-            session.getUserProperties().put("ip",newIp);
-            session.getUserProperties().put("pp",newPp);
-            session.getUserProperties().put("state","Online");
+            Set<User> keys = clients.keySet();
+            for(User u : keys){
+                if(u.getUserName().equals(newUser.getUserName())){
+                    clients.remove(u);
+                }
+            }
         }
+
+        clients.put(newUser,session);
+        session.getUserProperties().put(USERNAME_KEY,newUserName);
+        session.getUserProperties().put("ip",newIp);
+        session.getUserProperties().put("pp",newPp);
+        session.getUserProperties().put("state","Online");
+
 
         session.getBasicRemote().sendText(String.valueOf(new JSONObject()
                 .put("func","newUser")
@@ -64,7 +69,6 @@ public class MyWebSocketEndPoint {
 
         for (Session client : clients.values()){
             if(client == session) continue;
-
             client.getBasicRemote().sendText(String.valueOf(new JSONObject()
                     .put("func","newUser")
                     .put("userName",newUserName)
@@ -73,7 +77,6 @@ public class MyWebSocketEndPoint {
                     .put("state","Online")
             ));
         }
-
     }
 
     @OnMessage
@@ -90,13 +93,23 @@ public class MyWebSocketEndPoint {
                 //client.getBasicRemote().sendText("message|" + sender + "|" + messageContent + "|all");
             }
         }else{
-            Session client = clients.get(clients.keySet().stream().filter(user -> user.getUserName().equals(destination)));
-            client.getBasicRemote().sendText(String.valueOf(new JSONObject()
-                    .put("func","message")
-                    .put("sender",sender)
-                    .put("messageContent",messageContent)
-                    .put("destTo",destination)
-            ));
+            Set<User> keys = clients.keySet();
+            User destUser = new User();
+            for(User u : keys){
+                if(u.getUserName().equals(destination)){
+                    destUser = u;
+                }
+            }
+
+            Session client = clients.get(destUser);
+            if(client != null){
+                client.getBasicRemote().sendText(String.valueOf(new JSONObject()
+                        .put("func","message")
+                        .put("sender",sender)
+                        .put("messageContent",messageContent)
+                        .put("destTo",destination)
+                ));
+            }
         }
     }
 
