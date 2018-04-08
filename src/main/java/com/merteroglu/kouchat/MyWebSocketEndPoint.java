@@ -1,40 +1,74 @@
 package com.merteroglu.kouchat;
 
 
+import com.fasterxml.jackson.databind.util.JSONPObject;
+import org.json.JSONObject;
+
 import javax.websocket.OnClose;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 @ServerEndpoint(value = "/chat")
 public class MyWebSocketEndPoint {
     private static final String USERNAME_KEY = "username";
-    private static Map<String,Session> clients = Collections.synchronizedMap(new LinkedHashMap<>());
+    private static Map<User,Session> clients = Collections.synchronizedMap(new LinkedHashMap<>());
 
     @OnOpen
     public void onOpen(Session session) throws Exception{
         Map<String,List<String>> parameter = session.getRequestParameterMap();
         List<String> list = parameter.get(USERNAME_KEY);
+        List<String> iplist = parameter.get("ip");
+        List<String> ppList = parameter.get("pp");
         String newUserName = list.get(0);
+        String newIp = iplist.get(0);
+        String newPp = ppList.get(0);
 
-        clients.put(newUserName,session);
+        User newUser = new User(newUserName,newIp,newPp);
 
-        session.getUserProperties().put(USERNAME_KEY,newUserName);
-        session.getUserProperties().put("State","Online");
-        String response = "newUser|" + String.join("|",clients.keySet());
-        session.getBasicRemote().sendText(response);
+        if(clients.containsKey(newUser)){
+            clients.get(newUser).getUserProperties().put("state","Online");
+        }else{
+            clients.put(newUser,session);
+            session.getUserProperties().put(USERNAME_KEY,newUserName);
+            session.getUserProperties().put("ip",newIp);
+            session.getUserProperties().put("pp",newPp);
+            session.getUserProperties().put("state","Online");
+        }
+
+        session.getBasicRemote().sendText(String.valueOf(new JSONObject()
+                .put("func","newUser")
+                .put("userName",newUserName)
+                .put("ip",newIp)
+                .put("pp",newPp)
+                .put("state","Online")
+        ));
+
+        for(User user : clients.keySet()){
+            if(clients.get(user) == session) continue;
+            session.getBasicRemote().sendText(String.valueOf(new JSONObject()
+                    .put("func","newUser")
+                    .put("userName",user.getUserName())
+                    .put("ip",user.getIp())
+                    .put("pp",user.getProfilPhoto())
+                    .put("state",user.isOnline())
+            ));
+        }
 
         for (Session client : clients.values()){
             if(client == session) continue;
 
-            String state = (String) client.getUserProperties().get("State");
-            client.getBasicRemote().sendText("newUser|" + newUserName);
+            client.getBasicRemote().sendText(String.valueOf(new JSONObject()
+                    .put("func","newUser")
+                    .put("userName",newUserName)
+                    .put("ip",newIp)
+                    .put("pp",newPp)
+                    .put("state","Online")
+            ));
         }
 
     }
@@ -50,22 +84,29 @@ public class MyWebSocketEndPoint {
         if(destination.equals("all")){
             for(Session client : clients.values()){
                 if(client.equals(session)) continue;
-                client.getBasicRemote().sendText("message|" + sender + "|" + messageContent + "|all");
+                //client.getBasicRemote().sendText("message|" + sender + "|" + messageContent + "|all");
             }
         }else{
-            Session client = clients.get(destination);
-            String response = "message|" + sender + "|" + messageContent;
-            client.getBasicRemote().sendText(response);
+            Session client = clients.get(clients.keySet().stream().filter(user -> user.getUserName().equals(destination)));
+            client.getBasicRemote().sendText(String.valueOf(new JSONObject()
+                    .put("func","message")
+                    .put("sender",sender)
+                    .put("messageContent",messageContent)
+                    .put("destTo",destination)
+            ));
         }
     }
 
     @OnClose
     public void onClose(Session session) throws Exception{
         String userName = (String) session.getUserProperties().get(USERNAME_KEY);
-        session.getUserProperties().put("State","Offline");
-        //clients.remove(userName);
+        session.getUserProperties().put("state","Offline");
+        clients.keySet().stream().filter(user -> user.getUserName() == userName).collect(Collectors.toList()).get(0).setOnline(false);
         for(Session client : clients.values()){
-            client.getBasicRemote().sendText("removeUser|"+ userName);
+            client.getBasicRemote().sendText(String.valueOf(new JSONObject()
+                    .put("func","removeUser")
+                    .put("userName",userName)
+            ));
         }
     }
 

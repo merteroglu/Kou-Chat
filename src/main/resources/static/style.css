@@ -59,6 +59,9 @@ li {
     font-size: 12pt;
     padding: 7px 20px;
     position: relative;
+    background-color: #bbbbbb;
+    border-radius: 5px;
+    margin: 3px;
 }
 
 li.hoverable {
@@ -171,4 +174,22 @@ aside>h5 {
     margin-left: 5px;
     width: 12px;
     height: 12px;
+}
+
+.user-list {
+    list-style-type: none;
+    margin-left:5px;
+    display: inline-block;
+    width: 80%;
+}
+
+.user-list img
+{
+    float:left;
+}
+
+.user-list p,.user-list h3 {
+    text-align: right;
+    display:inline-block;
+    padding: 0;
 }

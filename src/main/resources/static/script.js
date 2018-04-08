@@ -25,7 +25,7 @@ disconnectBtnEl.onclick = disconnect;
 
 function connect() {
     //socket = new WebSocket("ws://"+ location.hostname + ':' + location.port + location.pathname + "chat?username=" + usernameInputEl.value);
-    socket = new WebSocket("ws://localhost:8080/" + "chat?username=" + usernameInputEl.value);
+    socket = new WebSocket("ws://localhost:8080/" + "chat?username=" + usernameInputEl.value + "&ip=1.1.1.1" + "&pp=00000");
     socket.onopen = socketOnOpen;
     socket.onmessage = socketOnMessage;
     socket.onclose = socketOnClose;
@@ -43,16 +43,16 @@ function socketOnOpen(e) {
 }
 
 function socketOnMessage(e) {
-    var eventName = e.data.substr(0,e.data.indexOf("|"));
-    var data = e.data.substr(e.data.indexOf("|") + 1);
-    console.log("event name : " + eventName);
-    console.log("data :" + data);
-    var fn;
-    if(eventName == 'newUser') fn = newUser;
-    else if(eventName == 'removeUser') fn = removeUser;
-    else if(eventName == 'message') fn = getMessage;
+    var data = JSON.parse(e.data);
 
-    fn.apply(null,data.split('|'));
+    console.log("data name : " + data.userName);
+    console.log("data ip : " + data.ip);
+    console.log("data isOnline : " + data.state);
+
+    if(data.func == 'newUser') newUser(data);
+    else if(data.func == 'removeUser') removeUser(data);
+    else if(data.func == 'message') getMessage(data);
+
 }
 
 function socketOnClose(e) {
@@ -65,32 +65,31 @@ function socketOnClose(e) {
     usernameListEl.innerHTML = '';
 }
 
-function newUser() {
-    if(arguments.length == 1 && arguments[0] == "") return;
-    var usernameList = arguments;
+function newUser(data) {
+    var userInfo = data;
+    console.log("arguments",data);
     var oldUsernameList = usernameListEl.children;
-    for(var i = 0; i < usernameList.length;i++){
-        for(var j = 0; j < oldUsernameList.length;j++){
-            if(usernameList[i] == oldUsernameList[j].textContent){
-                usernameListEl.removeChild(oldUsernameList[j]);
+        for(var i = 0; i < oldUsernameList.length;i++){
+            if(userInfo.userName == oldUsernameList[i].id){
+                usernameListEl.removeChild(oldUsernameList[i]);
             }
         }
-    }
 
     var documentFragment = document.createDocumentFragment();
-    for(var i = 0; i < usernameList.length;i++){
-        var username = usernameList[i];
-        var liEl = document.createElement("li");
-        var icon = document.createElement("img");
-        icon.src = "/img/ic_online.png";
-        icon.className = "onlineuser";
-        liEl.id = username;
-        liEl.textContent = username;
-        liEl.onclick = chatToFn(username);
-        if(username != usernameInputEl.value) liEl.classList.add('hoverable');
-        liEl.appendChild(icon);
-        documentFragment.appendChild(liEl);
-    }
+    var liEl = document.createElement("li");
+    var icon = document.createElement("img");
+    var pName = document.createElement("p");
+    icon.src = "/img/ic_online.png";
+    icon.className = "onlineuser";
+    console.log("pname : " + userInfo.userName);
+    pName.textContent = userInfo.userName;
+    liEl.id = userInfo.userName;
+    liEl.className = "user-list";
+    liEl.onclick = chatToFn(userInfo.userName);
+    if(userInfo.userName != usernameInputEl.value) liEl.classList.add('hoverable');
+    liEl.appendChild(icon);
+    liEl.appendChild(pName);
+    documentFragment.appendChild(liEl);
     usernameListEl.appendChild(documentFragment);
 }
 
@@ -110,20 +109,41 @@ function getMessage(sender, message, to) {
 
 }
 
+function getMessage(data) {
+    data.destTo = data.destTo || data.sender;
+
+    if(chatTo == data.destTo){
+        var newChatEl = createNewChat(data.sender,data.messageContent);
+        messageBoardEl.appendChild(newChatEl);
+    }else{
+        var toEl = usernameListEl.querySelector('#' + data.destTo);
+        addCountMessage(toEl);
+    }
+
+    if(chatRoom[data.destTo]) chatRoom[data.destTo].push(newChatEl);
+    else chatRoom[data.destTo] = [newChatEl];
+
+}
+
 function removeUser(removedUserName) {
     var usernameList = usernameListEl.children;
     for(var i = 0; i < usernameList.length;i++){
-        var username = usernameList[i].textContent;
-        if(username == removedUserName){
+        var username = usernameList[i].id;
+        if(username == removedUserName.userName){
             usernameListEl.removeChild(usernameList[i]);
             var documentFragment = document.createDocumentFragment();
             var liEl = document.createElement("li");
             var icon = document.createElement("img");
-            icon.src = "/img/ic_offline.png";
+            var pName = document.createElement("p");
+            icon.src = "/img/ic_online.png";
             icon.className = "onlineuser";
+            pName.textContent = username;
             liEl.id = username;
-            liEl.textContent = username;
+            liEl.className = "user-list";
+            liEl.onclick = chatToFn(username);
+            if(username != usernameInputEl.value) liEl.classList.add('hoverable');
             liEl.appendChild(icon);
+            liEl.appendChild(pName);
             documentFragment.appendChild(liEl);
             usernameListEl.appendChild(documentFragment);
         }
@@ -166,7 +186,9 @@ chatToAllEl.onclick = chatToFn('all');
 function sendMessage() {
     var message = messageInputEl.value;
     if(message == '') return;
+
     socket.send(chatTo + '|' + message);
+
     messageInputEl.value = '';
 
     var sender = usernameInputEl.value;
