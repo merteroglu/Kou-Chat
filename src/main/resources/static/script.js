@@ -25,6 +25,8 @@ disconnectBtnEl.onclick = disconnect;
 
 function connect() {
     //socket = new WebSocket("ws://"+ location.hostname + ':' + location.port + location.pathname + "chat?username=" + usernameInputEl.value);
+
+
     socket = new WebSocket("ws://localhost:8080/" + "chat?username=" + usernameInputEl.value + "&ip=1.1.1.1" + "&pp=00000");
     socket.onopen = socketOnOpen;
     socket.onmessage = socketOnMessage;
@@ -155,7 +157,6 @@ function removeUser(removedUserName) {
             pName.textContent = username;
             liEl.id = username;
             liEl.className = "user-list";
-            liEl.onclick = chatToFn(username);
             liEl.appendChild(icon);
             liEl.appendChild(pName);
             documentFragment.appendChild(liEl);
@@ -169,8 +170,15 @@ function createNewChat(sender, message) {
     var senderEl = document.createElement('span');
     var messageEl = document.createElement('span');
 
-    if(sender == usernameInputEl.value)
+    if(sender == usernameInputEl.value){
         sender = 'me';
+        newChatDivEl.className = "me-message";
+    }else{
+        newChatDivEl.className = "sender-message";
+    }
+
+    senderEl.className = "message-header";
+    messageEl.className = "message-text";
 
     senderEl.textContent = sender;
     messageEl.textContent = message;

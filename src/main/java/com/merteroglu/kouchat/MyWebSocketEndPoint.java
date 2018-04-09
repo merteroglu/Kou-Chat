@@ -1,13 +1,10 @@
 package com.merteroglu.kouchat;
 
 
-import com.fasterxml.jackson.databind.util.JSONPObject;
+
 import org.json.JSONObject;
 
-import javax.websocket.OnClose;
-import javax.websocket.OnMessage;
-import javax.websocket.OnOpen;
-import javax.websocket.Session;
+import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -28,6 +25,7 @@ public class MyWebSocketEndPoint {
         String newIp = iplist.get(0);
         String newPp = ppList.get(0);
 
+
         User newUser = new User(newUserName,newIp,newPp);
 
         long count = clients.keySet().stream().filter(user -> user.getUserName().equals(newUser.getUserName())).count();
@@ -36,7 +34,12 @@ public class MyWebSocketEndPoint {
             Set<User> keys = clients.keySet();
             for(User u : keys){
                 if(u.getUserName().equals(newUser.getUserName())){
-                    clients.remove(u);
+                    try{
+                        clients.remove(u);
+                        break;
+                    }catch (Exception e){
+
+                    }
                 }
             }
         }

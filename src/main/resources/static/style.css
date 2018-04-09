@@ -59,17 +59,18 @@ li {
     font-size: 12pt;
     padding: 7px 20px;
     position: relative;
-    background-color: #bbbbbb;
+    background-color: #cecbcb;
     border-radius: 5px;
     margin: 3px;
 }
 
 li.hoverable {
     cursor: pointer;
+    margin : 5px;
 }
 
 li.hoverable:hover {
-    background: #F9FCFF;
+    background: #ed143d;
 }
 
 li>.count {
@@ -97,7 +98,7 @@ aside>h5 {
     border: 1px solid #bbb;
     width: 95%;
     font-size: 0pt;
-    height: 90%;
+    height: 85%;
 }
 
 #dialog>span:first-child {
@@ -119,16 +120,18 @@ aside>h5 {
 }
 
 #dialog>#message-board {
-    height: 90%;
+    height: 85%;
     overflow-y: auto;
 }
 
 #dialog>#message-board>div {
-    font-size: 10pt;
+    /*font-size: 10pt;*/
     padding: 6px 15px;
     border-bottom: 1px solid #999;
+    display: inline-block;
 }
 
+/*
 #dialog>#message-board>div:nth-child(even) {
     background: #F9FCFF;
 }
@@ -138,9 +141,11 @@ aside>h5 {
     color: gray;
     margin-bottom: 10px;
 }
+*/
 
 #dialog>#message {
     width: 85%;
+    max-height: 5%;
     border: 0px;
     padding: 5px;
     margin-left: 5px;
@@ -154,8 +159,8 @@ aside>h5 {
 }
 
 #dialog>#send {
-    width: 10%;
-    height: 4%;
+    width: 12%;
+    height: 6%;
     margin: 4px;
     border: 0px;
     color: white;
@@ -174,6 +179,7 @@ aside>h5 {
     margin-left: 5px;
     width: 12px;
     height: 12px;
+    margin-right: 10px ;
 }
 
 .user-list {
@@ -183,13 +189,42 @@ aside>h5 {
     width: 80%;
 }
 
-.user-list img
-{
-    float:left;
-}
 
 .user-list p,.user-list h3 {
     text-align: right;
     display:inline-block;
     padding: 0;
+}
+
+.sender-message {
+    background-color: #e2cce8;
+    text-align: left;
+    width: 50%;
+    border: 1px solid #a291a6;
+    margin-left: 10px;
+    margin-top: 10px;
+    color: #000;
+    font-size: 15px;
+}
+
+.me-message{
+    background-color: #7ee482;
+    text-align: left;
+    float: right;
+    width: 50%;
+    margin-right: 10px;
+    margin-top: 10px;
+    border: 1px solid #3ead43;
+    color: #000;
+    font-size: 15px;
+}
+
+.message-text{
+    display: block;
+    word-break: break-word;
+}
+
+.message-header{
+    font-size: 18px;
+    color: #ff0057;
 }
