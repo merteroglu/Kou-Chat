@@ -9,8 +9,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
-import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
-import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 import org.springframework.web.socket.server.standard.ServerEndpointExporter;
 
 @CrossOrigin
@@ -18,7 +16,7 @@ import org.springframework.web.socket.server.standard.ServerEndpointExporter;
 @Configuration
 @EnableAutoConfiguration
 @EnableWebSocket
-public class KouchatApplication extends SpringBootServletInitializer implements WebSocketConfigurer {
+public class KouchatApplication extends SpringBootServletInitializer {
 
 	public static void main(String[] args) {
 		SpringApplication.run(KouchatApplication.class, args);
@@ -36,11 +34,10 @@ public class KouchatApplication extends SpringBootServletInitializer implements 
 
 	@Override
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-		return application.sources(KouchatApplication.class);
+		return application.sources(MyWebSocketConfig.class);
 	}
 
-	@Override
-	public void registerWebSocketHandlers(WebSocketHandlerRegistry webSocketHandlerRegistry) {
 
-	}
+
+
 }

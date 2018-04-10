@@ -23,11 +23,19 @@ var socket = undefined;
 connectBtnEl.onclick = connect;
 disconnectBtnEl.onclick = disconnect;
 
+var ipData;
+$(document).ready( function() {
+    $.getJSON( "http://ipinfo.io", function(data){
+        ipData = data;
+    });
+});
+
+
 function connect() {
     //socket = new WebSocket("ws://"+ location.hostname + ':' + location.port + location.pathname + "chat?username=" + usernameInputEl.value);
 
+    socket = new WebSocket("ws://localhost:8080/" + "chat?username=" + usernameInputEl.value + "&ip=" + ipData.ip  + "&pp=00000");
 
-    socket = new WebSocket("ws://localhost:8080/" + "chat?username=" + usernameInputEl.value + "&ip=1.1.1.1" + "&pp=00000");
     socket.onopen = socketOnOpen;
     socket.onmessage = socketOnMessage;
     socket.onclose = socketOnClose;
@@ -79,7 +87,11 @@ function newUser(data) {
     var liEl = document.createElement("li");
     var icon = document.createElement("img");
     var pName = document.createElement("p");
-    icon.src = "/img/ic_online.png";
+    if(data.state == "Online"){
+        icon.src = "/img/ic_online.png";
+    }else{
+        icon.src = "/img/ic_offline.png";
+    }
     icon.className = "onlineuser";
     pName.textContent = userInfo.userName;
     liEl.id = userInfo.userName;

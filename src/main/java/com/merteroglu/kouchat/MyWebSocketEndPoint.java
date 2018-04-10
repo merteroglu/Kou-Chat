@@ -1,9 +1,6 @@
 package com.merteroglu.kouchat;
 
-
-
 import org.json.JSONObject;
-
 import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
 import java.util.*;
@@ -16,7 +13,7 @@ public class MyWebSocketEndPoint {
     private static Map<User,Session> clients = Collections.synchronizedMap(new LinkedHashMap<>());
 
     @OnOpen
-    public void onOpen(Session session) throws Exception{
+    public void onOpen(Session session,EndpointConfig config) throws Exception{
         Map<String,List<String>> parameter = session.getRequestParameterMap();
         List<String> list = parameter.get(USERNAME_KEY);
         List<String> iplist = parameter.get("ip");
@@ -24,7 +21,6 @@ public class MyWebSocketEndPoint {
         String newUserName = list.get(0);
         String newIp = iplist.get(0);
         String newPp = ppList.get(0);
-
 
         User newUser = new User(newUserName,newIp,newPp);
 
@@ -72,6 +68,7 @@ public class MyWebSocketEndPoint {
 
         for (Session client : clients.values()){
             if(client == session) continue;
+            if(client.isOpen())
             client.getBasicRemote().sendText(String.valueOf(new JSONObject()
                     .put("func","newUser")
                     .put("userName",newUserName)
@@ -129,5 +126,6 @@ public class MyWebSocketEndPoint {
             ));
         }
     }
+
 
 }
