@@ -24,6 +24,7 @@ connectBtnEl.onclick = connect;
 disconnectBtnEl.onclick = disconnect;
 
 var ipData;
+var basePp;
 $(document).ready( function() {
     $.getJSON( "http://ipinfo.io", function(data){
         ipData = data;
@@ -34,8 +35,13 @@ $(document).ready( function() {
 function connect() {
     //socket = new WebSocket("ws://"+ location.hostname + ':' + location.port + location.pathname + "chat?username=" + usernameInputEl.value);
 
-    socket = new WebSocket("ws://localhost:8080/" + "chat?username=" + usernameInputEl.value + "&ip=" + ipData.ip  + "&pp=00000");
+    if(basePp == undefined){
+        basePp = "0000";
+    }
 
+    socket = new WebSocket("ws://localhost:8080/" + "chat?username=" + usernameInputEl.value + "&ip=" + ipData.ip  + "&pp=0000");
+
+    socket.binaryType = "blob";
     socket.onopen = socketOnOpen;
     socket.onmessage = socketOnMessage;
     socket.onclose = socketOnClose;
@@ -50,6 +56,19 @@ function socketOnOpen(e) {
     usernameInputEl.disabled = true;
     connectBtnEl.disabled = true;
     disconnectBtnEl.disabled = false;
+
+
+    var block = basePp.split(";");
+    var contentType = block[0].split(":")[1];
+    var realData = block[1].split(",")[1];
+
+    var blob = b64toBlob(realData, contentType);
+
+
+    console.log("length : " + basePp.length);
+    var firstPart = basePp.slice(0,10000);
+    socket.send(firstPart);
+    console.log("sent first part");
 }
 
 function socketOnMessage(e) {
@@ -251,4 +270,39 @@ function chatToFn(username) {
         });
         messageBoardEl.appendChild(df);
     }
+}
+
+function readURL(input) {
+    if (input.files && input.files[0]) {
+        var file = input.files[0];
+        var reader = new FileReader();
+        reader.onloadend = function() {
+            basePp = reader.result;
+        }
+        reader.readAsDataURL(file);
+    }
+}
+
+function b64toBlob(b64Data, contentType, sliceSize) {
+    contentType = contentType || '';
+    sliceSize = sliceSize || 512;
+
+    var byteCharacters = atob(b64Data);
+    var byteArrays = [];
+
+    for (var offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+        var slice = byteCharacters.slice(offset, offset + sliceSize);
+
+        var byteNumbers = new Array(slice.length);
+        for (var i = 0; i < slice.length; i++) {
+            byteNumbers[i] = slice.charCodeAt(i);
+        }
+
+        var byteArray = new Uint8Array(byteNumbers);
+
+        byteArrays.push(byteArray);
+    }
+
+    var blob = new Blob(byteArrays, {type: contentType});
+    return blob;
 }

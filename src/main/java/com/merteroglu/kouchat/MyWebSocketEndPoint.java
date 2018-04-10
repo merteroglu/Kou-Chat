@@ -3,6 +3,7 @@ package com.merteroglu.kouchat;
 import org.json.JSONObject;
 import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
+import java.nio.charset.Charset;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -79,11 +80,20 @@ public class MyWebSocketEndPoint {
         }
     }
 
+
     @OnMessage
     public void onMessage(Session session , String message) throws Exception{
+        if(message.substring(0,11).equals("data:image")){
+
+
+            return;
+        }
+
         String[] data = message.split("\\|");
         String destination = data[0];
         String messageContent = data[1];
+
+
 
         String sender = (String) session.getUserProperties().get(USERNAME_KEY);
 
