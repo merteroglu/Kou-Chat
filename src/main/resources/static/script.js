@@ -57,18 +57,16 @@ function socketOnOpen(e) {
     connectBtnEl.disabled = true;
     disconnectBtnEl.disabled = false;
 
+    if(basePp != undefined){
+        var block = basePp.split(";");
+        var contentType = block[0].split(":")[1];
+        var realData = block[1].split(",")[1];
 
-    var block = basePp.split(";");
-    var contentType = block[0].split(":")[1];
-    var realData = block[1].split(",")[1];
+        var blob = b64toBlob(realData, contentType);
 
-    var blob = b64toBlob(realData, contentType);
-
-
-    console.log("length : " + basePp.length);
-    var firstPart = basePp.slice(0,10000);
-    socket.send(firstPart);
-    console.log("sent first part");
+        socket.send(blob);
+        console.log(blob);
+    }
 }
 
 function socketOnMessage(e) {
@@ -80,6 +78,7 @@ function socketOnMessage(e) {
     if(data.func == 'newUser') newUser(data);
     else if(data.func == 'removeUser') removeUser(data);
     else if(data.func == 'message') getMessage(data.sender,data.messageContent,data.destTo);
+    else if(data.func == 'newUserPp') getUserPp(data);
 
 }
 
@@ -102,21 +101,32 @@ function newUser(data) {
             }
         }
 
+    var base64String = btoa(String.fromCharCode.apply(null, new Uint8Array(data.pp)));
+
     var documentFragment = document.createDocumentFragment();
     var liEl = document.createElement("li");
+    var pp = document.createElement("img");
     var icon = document.createElement("img");
     var pName = document.createElement("p");
+    console.log(userInfo.userName + " state : " + data.state)
     if(data.state == "Online"){
         icon.src = "/img/ic_online.png";
     }else{
         icon.src = "/img/ic_offline.png";
     }
+    pp.setAttribute(
+        'src', 'data:image/png;base64,' + base64String
+    );
+    pp.width = 32;
+    pp.height = 32;
+    pp.className = "user-list-pp";
     icon.className = "onlineuser";
     pName.textContent = userInfo.userName;
     liEl.id = userInfo.userName;
     liEl.className = "user-list";
     liEl.onclick = chatToFn(userInfo.userName);
     if(userInfo.userName != usernameInputEl.value) liEl.classList.add('hoverable');
+    liEl.appendChild(pp);
     liEl.appendChild(icon);
     liEl.appendChild(pName);
     documentFragment.appendChild(liEl);
@@ -172,6 +182,53 @@ function getMessage(data) {
     else chatRoom[data.destTo] = [newChatEl];
 
 }*/
+
+function getUserPp(data) {
+    var sender = data.userName;
+    console.log("get User pp " + data.userName + " " + data.pp );
+
+    var base64String = btoa(String.fromCharCode.apply(null, new Uint8Array(data.pp)));
+    console.log("base64string : " + base64String);
+    //var block = base64String.split(";");
+    //var contentType = block[0].split(":")[1];
+    //var realData = block[1].split(",")[1];
+
+    //var blob = b64toBlob(realData, contentType);
+
+    var usernameList = usernameListEl.children;
+    for(var i = 0; i < usernameList.length;i++){
+        var username = usernameList[i].id;
+        if(username == sender){
+            usernameListEl.removeChild(usernameList[i]);
+            var documentFragment = document.createDocumentFragment();
+            var liEl = document.createElement("li");
+            var pp = document.createElement("img");
+            var icon = document.createElement("img");
+            var pName = document.createElement("p");
+            if(data.state == "Online"){
+                icon.src = "/img/ic_online.png";
+            }else{
+                icon.src = "/img/ic_offline.png";
+            }
+            pp.setAttribute(
+                'src', 'data:image/png;base64,' + base64String
+            );
+            pp.width = 32;
+            pp.height = 32;
+            pp.className = "user-list-pp";
+            icon.className = "onlineuser";
+            pName.textContent = username;
+            liEl.id = username;
+            liEl.className = "user-list";
+            liEl.appendChild(pp);
+            liEl.appendChild(icon);
+            liEl.appendChild(pName);
+            documentFragment.appendChild(liEl);
+            usernameListEl.appendChild(documentFragment);
+        }
+    }
+
+}
 
 function removeUser(removedUserName) {
     var usernameList = usernameListEl.children;

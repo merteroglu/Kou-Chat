@@ -236,6 +236,12 @@ aside>h5 {
     cursor: pointer;
 }
 
+.user-list-pp{
+    float: left;
+    margin-right: 5px;
+    margin-top: 10px;
+}
+
 input[type="file"] {
     cursor: pointer !Important;
     font: 300 14px sans-serif;
@@ -261,3 +267,4 @@ input[type="file"]::-ms-browse {
     color: #fff;
     text-transform: uppercase;
 }
+

@@ -1,5 +1,7 @@
 package com.merteroglu.kouchat;
 
+
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
@@ -7,19 +9,18 @@ import java.util.List;
 public class User {
     private String userName;
     private String ip;
-    private String profilPhoto;
+    private ByteBuffer profilPhoto;
     private List<User> friends;
-    private boolean isOnline;
+    private String isOnline;
 
     public User() {
     }
 
-    public User(String userName, String ip, String profilPhoto) {
+    public User(String userName, String ip) {
         this.userName = userName;
         this.ip = ip;
-        this.profilPhoto = profilPhoto;
         friends = new ArrayList<>();
-        isOnline = true;
+        isOnline = "Online";
     }
 
     public String getUserName() {
@@ -38,11 +39,11 @@ public class User {
         this.ip = ip;
     }
 
-    public String getProfilPhoto() {
+    public ByteBuffer getProfilPhoto() {
         return profilPhoto;
     }
 
-    public void setProfilPhoto(String profilPhoto) {
+    public void setProfilPhoto(ByteBuffer profilPhoto) {
         this.profilPhoto = profilPhoto;
     }
 
@@ -54,11 +55,11 @@ public class User {
         this.friends = friends;
     }
 
-    public boolean isOnline() {
+    public String isOnline() {
         return isOnline;
     }
 
-    public void setOnline(boolean online) {
+    public void setOnline(String online) {
         isOnline = online;
     }
 

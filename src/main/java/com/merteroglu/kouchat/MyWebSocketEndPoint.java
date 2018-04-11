@@ -3,7 +3,7 @@ package com.merteroglu.kouchat;
 import org.json.JSONObject;
 import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
-import java.nio.charset.Charset;
+import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -21,9 +21,9 @@ public class MyWebSocketEndPoint {
         List<String> ppList = parameter.get("pp");
         String newUserName = list.get(0);
         String newIp = iplist.get(0);
-        String newPp = ppList.get(0);
 
-        User newUser = new User(newUserName,newIp,newPp);
+
+        User newUser = new User(newUserName,newIp);
 
         long count = clients.keySet().stream().filter(user -> user.getUserName().equals(newUser.getUserName())).count();
 
@@ -44,7 +44,6 @@ public class MyWebSocketEndPoint {
         clients.put(newUser,session);
         session.getUserProperties().put(USERNAME_KEY,newUserName);
         session.getUserProperties().put("ip",newIp);
-        session.getUserProperties().put("pp",newPp);
         session.getUserProperties().put("state","Online");
 
 
@@ -52,7 +51,6 @@ public class MyWebSocketEndPoint {
                 .put("func","newUser")
                 .put("userName",newUserName)
                 .put("ip",newIp)
-                .put("pp",newPp)
                 .put("state","Online")
         ));
 
@@ -62,7 +60,7 @@ public class MyWebSocketEndPoint {
                     .put("func","newUser")
                     .put("userName",user.getUserName())
                     .put("ip",user.getIp())
-                    .put("pp",user.getProfilPhoto())
+                    .put("pp",user.getProfilPhoto().array())
                     .put("state",user.isOnline())
             ));
         }
@@ -74,26 +72,46 @@ public class MyWebSocketEndPoint {
                     .put("func","newUser")
                     .put("userName",newUserName)
                     .put("ip",newIp)
-                    .put("pp",newPp)
                     .put("state","Online")
             ));
         }
     }
 
+    @OnMessage(maxMessageSize = 1024*1024)
+    public void onMessageBlob(Session session, ByteBuffer buffer ){
+        String sender = (String) session.getUserProperties().get(USERNAME_KEY);
+        String senderIP = (String) session.getUserProperties().get("ip");
+        Set<User> keys = clients.keySet();
+        User destUser = new User();
+        for(User u : keys){
+            if(u.getUserName().equals(sender)){
+                destUser = u;
+            }
+        }
+        destUser.setProfilPhoto(buffer);
+
+            try{
+                for (Session client : clients.values()) {
+                    if (client.isOpen())
+                        client.getBasicRemote().sendText(String.valueOf(new JSONObject()
+                                .put("func", "newUserPp")
+                                .put("userName", sender)
+                                .put("ip", senderIP)
+                                .put("state", "Online")
+                                .put("pp",buffer.array())
+                        ));
+                }
+            }catch (Exception e){
+
+            }
+    }
+
 
     @OnMessage
     public void onMessage(Session session , String message) throws Exception{
-        if(message.substring(0,11).equals("data:image")){
-
-
-            return;
-        }
-
         String[] data = message.split("\\|");
         String destination = data[0];
         String messageContent = data[1];
-
-
 
         String sender = (String) session.getUserProperties().get(USERNAME_KEY);
 
@@ -127,7 +145,8 @@ public class MyWebSocketEndPoint {
     public void onClose(Session session) throws Exception{
         String userName = (String) session.getUserProperties().get(USERNAME_KEY);
         session.getUserProperties().put("state","Offline");
-        clients.keySet().stream().filter(user -> user.getUserName() == userName).collect(Collectors.toList()).get(0).setOnline(false);
+        //TODO Kapatırken diğer kullanıcı bilgilerini de gönder. Js tarafında da bu bilgilere göre oluştur
+        clients.keySet().stream().filter(user -> user.getUserName() == userName).collect(Collectors.toList()).get(0).setOnline("Offline");
         for(Session client : clients.values()){
             if(client == session) continue;
             client.getBasicRemote().sendText(String.valueOf(new JSONObject()
