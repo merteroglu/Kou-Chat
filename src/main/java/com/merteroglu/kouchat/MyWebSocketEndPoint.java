@@ -116,7 +116,13 @@ public class MyWebSocketEndPoint {
         String destination = data[0];
         String messageContent = data[1];
 
+        if(destination.equals("wantToFriend")){
+            wantToFriend(session,message);
+            return;
+        }
+
         String sender = (String) session.getUserProperties().get(USERNAME_KEY);
+        User me = clients.keySet().stream().filter(user -> user.getUserName() == sender).collect(Collectors.toList()).get(0);
 
         if(destination.equals("all")){
             for(Session client : clients.values()){
@@ -132,17 +138,40 @@ public class MyWebSocketEndPoint {
                 }
             }
 
+            boolean isFriend = false;
+
+            for (User u : destUser.getFriends()){
+                if(u == me){
+                    isFriend = true;
+                }
+            }
+
             Session client = clients.get(destUser);
             if(client != null){
-                client.getBasicRemote().sendText(String.valueOf(new JSONObject()
-                        .put("func","message")
-                        .put("sender",sender)
-                        .put("messageContent",messageContent)
-                        .put("destTo",destination)
-                ));
+                if(client.isOpen()){
+
+                    if(isFriend){
+                        client.getBasicRemote().sendText(String.valueOf(new JSONObject()
+                                .put("func","message")
+                                .put("sender",sender)
+                                .put("messageContent",messageContent)
+                                .put("destTo",destination)
+                        ));
+                    }else{
+                        client.getBasicRemote().sendText(String.valueOf(new JSONObject()
+                                .put("func","wantToFriend")
+                                .put("sender",sender)
+                                .put("messageContent",messageContent)
+                                .put("destTo",destination)
+                        ));
+                    }
+
+
+                }
             }
         }
     }
+
 
     @OnClose
     public void onClose(Session session) throws Exception{
@@ -161,6 +190,28 @@ public class MyWebSocketEndPoint {
                 ));
             }
         }
+    }
+
+
+    private void wantToFriend(Session session, String message) {
+        String[] data = message.split("\\|");
+        String destination = data[1];
+
+        String sender = (String) session.getUserProperties().get(USERNAME_KEY);
+        User me = clients.keySet().stream().filter(user -> user.getUserName() == sender).collect(Collectors.toList()).get(0);
+
+        Set<User> keys = clients.keySet();
+        User destUser = new User();
+        for(User u : keys){
+            if(u.getUserName().equals(destination)){
+                destUser = u;
+            }
+        }
+
+        me.getFriends().add(destUser);
+        destUser.getFriends().add(me);
+
+
     }
 
 

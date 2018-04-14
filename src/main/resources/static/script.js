@@ -79,6 +79,7 @@ function socketOnMessage(e) {
     else if(data.func == 'removeUser') removeUser(data);
     else if(data.func == 'message') getMessage(data.sender,data.messageContent,data.destTo);
     else if(data.func == 'newUserPp') getUserPp(data);
+    else if(data.func == 'wantToFriend') wantToFriend(data);
 
 }
 
@@ -129,12 +130,7 @@ function newUser(data) {
 }
 
 function getMessage(sender, message, to) {
-    console.log("destTo : " + to);
     to = to || sender;
-    console.log("to : " + to);
-    console.log("sender : " + sender);
-    console.log("messageContent : " + message);
-    console.log("getMessage chatTo : " + chatTo);
 
     if(sender == usernameInputEl.value){
         var newChatEl = createNewChat(sender,message);
@@ -157,7 +153,6 @@ function getMessage(sender, message, to) {
     else chatRoom[sender] = [newChatEl];
 
 }
-
 
 function getUserPp(data) {
     var sender = data.userName;
@@ -300,6 +295,13 @@ function chatToFn(username) {
            df.appendChild(conversation);
         });
         messageBoardEl.appendChild(df);
+    }
+}
+
+function wantToFriend(data) {
+    if(confirm(data.sender + " wants to send message to you")){
+        socket.send("wantToFriend|"+data.sender);
+        getMessage(data.sender,data.messageContent,data.destTo);
     }
 }
 
