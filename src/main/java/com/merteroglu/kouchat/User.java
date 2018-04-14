@@ -9,7 +9,7 @@ import java.util.List;
 public class User {
     private String userName;
     private String ip;
-    private ByteBuffer profilPhoto;
+    private byte[] profilPhoto;
     private List<User> friends;
     private String isOnline;
 
@@ -21,6 +21,7 @@ public class User {
         this.ip = ip;
         friends = new ArrayList<>();
         isOnline = "Online";
+        profilPhoto = new byte[]{};
     }
 
     public String getUserName() {
@@ -39,11 +40,11 @@ public class User {
         this.ip = ip;
     }
 
-    public ByteBuffer getProfilPhoto() {
+    public byte[] getProfilPhoto() {
         return profilPhoto;
     }
 
-    public void setProfilPhoto(ByteBuffer profilPhoto) {
+    public void setProfilPhoto(byte[] profilPhoto) {
         this.profilPhoto = profilPhoto;
     }
 

@@ -105,30 +105,25 @@ function newUser(data) {
 
     var documentFragment = document.createDocumentFragment();
     var liEl = document.createElement("li");
-    var pp = document.createElement("img");
-    var icon = document.createElement("img");
-    var pName = document.createElement("p");
-    console.log(userInfo.userName + " state : " + data.state)
+    var ppdiv = document.createElement("div");
+    var status = document.createElement("span");
+    var pName = document.createElement("span");
+    ppdiv.className = "avatar";
+    ppdiv.style.backgroundImage = "url('data:image/png;base64," + base64String +  "')";
     if(data.state == "Online"){
-        icon.src = "/img/ic_online.png";
+        status.className = "avatar-status bg-green";
     }else{
-        icon.src = "/img/ic_offline.png";
+        status.className = "avatar-status bg-red";
     }
-    pp.setAttribute(
-        'src', 'data:image/png;base64,' + base64String
-    );
-    pp.width = 32;
-    pp.height = 32;
-    pp.className = "user-list-pp";
-    icon.className = "onlineuser";
     pName.textContent = userInfo.userName;
+    pName.className = "user-name";
     liEl.id = userInfo.userName;
-    liEl.className = "user-list";
+    liEl.className = "card";
     liEl.onclick = chatToFn(userInfo.userName);
     if(userInfo.userName != usernameInputEl.value) liEl.classList.add('hoverable');
-    liEl.appendChild(pp);
-    liEl.appendChild(icon);
-    liEl.appendChild(pName);
+    ppdiv.appendChild(status);
+    ppdiv.appendChild(pName);
+    liEl.appendChild(ppdiv);
     documentFragment.appendChild(liEl);
     usernameListEl.appendChild(documentFragment);
 }
@@ -163,38 +158,10 @@ function getMessage(sender, message, to) {
 
 }
 
-/*
-function getMessage(data) {
-    console.log("destTo : " + data.destTo);
-    console.log("sender : " + data.sender);
-    console.log("messageContent : " + data.messageContent);
-    data.destTo = data.destTo || data.sender;
-
-    if(chatTo == data.destTo){
-        var newChatEl = createNewChat(data.sender,data.messageContent);
-        messageBoardEl.appendChild(newChatEl);
-    }else{
-        //var toEl = usernameListEl.querySelector('#' + data.destTo);
-        //addCountMessage(toEl);
-    }
-
-    if(chatRoom[data.destTo]) chatRoom[data.destTo].push(newChatEl);
-    else chatRoom[data.destTo] = [newChatEl];
-
-}*/
 
 function getUserPp(data) {
     var sender = data.userName;
-    console.log("get User pp " + data.userName + " " + data.pp );
-
     var base64String = btoa(String.fromCharCode.apply(null, new Uint8Array(data.pp)));
-    console.log("base64string : " + base64String);
-    //var block = base64String.split(";");
-    //var contentType = block[0].split(":")[1];
-    //var realData = block[1].split(",")[1];
-
-    //var blob = b64toBlob(realData, contentType);
-
     var usernameList = usernameListEl.children;
     for(var i = 0; i < usernameList.length;i++){
         var username = usernameList[i].id;
@@ -202,27 +169,26 @@ function getUserPp(data) {
             usernameListEl.removeChild(usernameList[i]);
             var documentFragment = document.createDocumentFragment();
             var liEl = document.createElement("li");
-            var pp = document.createElement("img");
-            var icon = document.createElement("img");
-            var pName = document.createElement("p");
+            var ppdiv = document.createElement("div");
+            var status = document.createElement("span");
+            var pName = document.createElement("span");
+            ppdiv.className = "avatar";
+            ppdiv.style.backgroundImage = "url('data:image/png;base64," + base64String +  "')";
+
             if(data.state == "Online"){
-                icon.src = "/img/ic_online.png";
+                status.className = "avatar-status bg-green";
             }else{
-                icon.src = "/img/ic_offline.png";
+                status.className = "avatar-status bg-red";
             }
-            pp.setAttribute(
-                'src', 'data:image/png;base64,' + base64String
-            );
-            pp.width = 32;
-            pp.height = 32;
-            pp.className = "user-list-pp";
-            icon.className = "onlineuser";
             pName.textContent = username;
+            pName.className = "user-name";
             liEl.id = username;
-            liEl.className = "user-list";
-            liEl.appendChild(pp);
-            liEl.appendChild(icon);
-            liEl.appendChild(pName);
+            liEl.className = "card";
+            liEl.onclick = chatToFn(data.userName);
+            if(data.userName != usernameInputEl.value) liEl.classList.add('hoverable');
+            ppdiv.appendChild(status);
+            ppdiv.appendChild(pName);
+            liEl.appendChild(ppdiv);
             documentFragment.appendChild(liEl);
             usernameListEl.appendChild(documentFragment);
         }
@@ -232,21 +198,27 @@ function getUserPp(data) {
 
 function removeUser(removedUserName) {
     var usernameList = usernameListEl.children;
+    var base64String = btoa(String.fromCharCode.apply(null, new Uint8Array(removedUserName.pp)));
+
     for(var i = 0; i < usernameList.length;i++){
         var username = usernameList[i].id;
         if(username == removedUserName.userName){
             usernameListEl.removeChild(usernameList[i]);
             var documentFragment = document.createDocumentFragment();
             var liEl = document.createElement("li");
-            var icon = document.createElement("img");
-            var pName = document.createElement("p");
-            icon.src = "/img/ic_offline.png";
-            icon.className = "onlineuser";
+            var ppdiv = document.createElement("div");
+            var status = document.createElement("span");
+            var pName = document.createElement("span");
+            ppdiv.className = "avatar";
+            ppdiv.style.backgroundImage = "url('data:image/png;base64," + base64String +  "')";
+            status.className = "avatar-status bg-red";
             pName.textContent = username;
+            pName.className = "user-name";
             liEl.id = username;
-            liEl.className = "user-list";
-            liEl.appendChild(icon);
-            liEl.appendChild(pName);
+            liEl.className = "card";
+            ppdiv.appendChild(status);
+            ppdiv.appendChild(pName);
+            liEl.appendChild(ppdiv);
             documentFragment.appendChild(liEl);
             usernameListEl.appendChild(documentFragment);
         }
@@ -284,9 +256,11 @@ function addCountMessage(toEl) {
         countEl.textContent = count + 1;
     }else{
         var countEl = document.createElement('span');
+        var item = toEl.querySelector('.avatar');
         countEl.classList.add('count');
         countEl.textContent = '1';
-        toEl.appendChild(countEl);
+        toEl.insertBefore(countEl,item);
+        //toEl.appendChild(countEl);
     }
 }
 

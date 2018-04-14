@@ -3,6 +3,9 @@ body {
     margin: 0px;
     font-family: helvetica;
     display: flex;
+    background-color: #f5f7fb;
+    font-family: "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+
 }
 
 header {
@@ -18,7 +21,7 @@ header {
 aside {
     width: 250px;
     height: 100%;
-    padding-top: 42px;
+    padding-top: 65px;
     display: inline-block;
     border-right: 1px solid grey;
 }
@@ -69,7 +72,7 @@ li.hoverable {
     margin : 5px;
 }
 
-li.hoverable:hover {
+li.hoverable:hover{
     background: #ed143d;
 }
 
@@ -88,17 +91,31 @@ li>.count {
     text-align: center;
 }
 
+li.hoverable:hover .count{
+    background: white;
+    color: crimson;
+}
+
+li.hoverable:hover .user-name{
+    color: white;
+}
+
+
 aside>h5 {
     margin: 0px;
     padding: 10px;
 }
 
 #dialog {
-    border-radius: 4px;
-    border: 1px solid #bbb;
     width: 95%;
+    border-radius: 3px;
+    border: 1px solid rgba(0, 40, 100, 0.12);
     font-size: 0pt;
     height: 85%;
+    background-color: #fff;
+    background-clip: border-box;
+    position: relative;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
 
 #dialog>span:first-child {
@@ -145,11 +162,11 @@ aside>h5 {
 
 #dialog>#message {
     width: 85%;
-    max-height: 5%;
+    height: 6%;
     border: 0px;
     padding: 5px;
     margin-left: 5px;
-    margin-top: 5px;
+    margin-top: 10px;
     font-family: helvetica;
     vertical-align: top;
     resize: none;
@@ -161,7 +178,7 @@ aside>h5 {
 #dialog>#send {
     width: 12%;
     height: 6%;
-    margin: 4px;
+    margin: 10px;
     border: 0px;
     color: white;
     background: crimson;
@@ -191,32 +208,38 @@ aside>h5 {
 
 
 .user-list p,.user-list h3 {
-    text-align: right;
-    display:inline-block;
-    padding: 0;
+    margin-left: 15px;
+    font-size: 24px;
+    color: #dc143c;
 }
 
 .sender-message {
-    background-color: #e2cce8;
+    background-color: #FF8890;
     text-align: left;
     width: 50%;
-    border: 1px solid #a291a6;
+    border: 1px solid rgba(0, 40, 100, 0.12);
+    border-radius: 3px;
     margin-left: 10px;
     margin-top: 10px;
-    color: #000;
+    color: #fff;
     font-size: 15px;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    background-clip: border-box;
 }
 
 .me-message{
-    background-color: #7ee482;
+    background-color: #f9b3ed;
     text-align: left;
     float: right;
     width: 50%;
     margin-right: 10px;
     margin-top: 10px;
-    border: 1px solid #3ead43;
-    color: #000;
+    border: 1px solid rgba(0, 40, 100, 0.12);
+    border-radius: 3px;
+    color: #fff;
     font-size: 15px;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    background-clip: border-box;
 }
 
 .message-text{
@@ -226,7 +249,7 @@ aside>h5 {
 
 .message-header{
     font-size: 18px;
-    color: #ff0057;
+    color: #fff;
 }
 
 .custom-file-upload {
@@ -237,9 +260,15 @@ aside>h5 {
 }
 
 .user-list-pp{
+    width: 2rem;
+    height: 2rem;
+    line-height: 2rem;
+    position: relative;
+    text-align: center;
     float: left;
     margin-right: 5px;
     margin-top: 10px;
+    border-radius: 50%;
 }
 
 input[type="file"] {
@@ -268,3 +297,58 @@ input[type="file"]::-ms-browse {
     text-transform: uppercase;
 }
 
+.avatar {
+    width: 2rem;
+    height: 2rem;
+    line-height: 2rem;
+    border-radius: 50%;
+    display: inline-block;
+    background: #ced4da no-repeat center/cover;
+    position: relative;
+    text-align: center;
+    color: #868e96;
+    font-weight: 600;
+    vertical-align: bottom;
+    font-size: .875rem;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    display: block !important;
+}
+
+.avatar-status {
+    position: absolute;
+    right: -2px;
+    bottom: -2px;
+    width: .75rem;
+    height: .75rem;
+    border: 2px solid #fff;
+    background: #868e96;
+    border-radius: 50%;
+}
+
+
+.bg-green {
+    background-color: #5eba00 !important;
+}
+
+.bg-red {
+    background-color: #ff0000 !important;
+}
+
+.user-name {
+    margin-left: 40px;
+    color: #000;
+}
+
+
+.card {
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    position: relative;
+    width: 80%;
+    background-color: #fff;
+    background-clip: border-box;
+    border: 1px solid rgba(0, 40, 100, 0.12);
+    border-radius: 3px;
+}

@@ -54,15 +54,18 @@ public class MyWebSocketEndPoint {
                 .put("state","Online")
         ));
 
+        //TODO PP yoksa kontrolü yap
         for(User user : clients.keySet()){
             if(clients.get(user) == session) continue;
+
             session.getBasicRemote().sendText(String.valueOf(new JSONObject()
                     .put("func","newUser")
                     .put("userName",user.getUserName())
                     .put("ip",user.getIp())
-                    .put("pp",user.getProfilPhoto().array())
+                    .put("pp",user.getProfilPhoto())
                     .put("state",user.isOnline())
             ));
+
         }
 
         for (Session client : clients.values()){
@@ -88,7 +91,7 @@ public class MyWebSocketEndPoint {
                 destUser = u;
             }
         }
-        destUser.setProfilPhoto(buffer);
+        destUser.setProfilPhoto(buffer.array());
 
             try{
                 for (Session client : clients.values()) {
@@ -144,15 +147,19 @@ public class MyWebSocketEndPoint {
     @OnClose
     public void onClose(Session session) throws Exception{
         String userName = (String) session.getUserProperties().get(USERNAME_KEY);
-        session.getUserProperties().put("state","Offline");
-        //TODO Kapatırken diğer kullanıcı bilgilerini de gönder. Js tarafında da bu bilgilere göre oluştur
-        clients.keySet().stream().filter(user -> user.getUserName() == userName).collect(Collectors.toList()).get(0).setOnline("Offline");
-        for(Session client : clients.values()){
-            if(client == session) continue;
-            client.getBasicRemote().sendText(String.valueOf(new JSONObject()
-                    .put("func","removeUser")
-                    .put("userName",userName)
-            ));
+        session.getUserProperties().put("state", "Offline");
+        User u = clients.keySet().stream().filter(user -> user.getUserName() == userName).collect(Collectors.toList()).get(0);
+        u.setOnline("Offline");
+        for (Session client : clients.values()) {
+            if (client == session) continue;
+            if (client.isOpen()) {
+                client.getBasicRemote().sendText(String.valueOf(new JSONObject()
+                        .put("func", "removeUser")
+                        .put("userName", userName)
+                        .put("ip", u.getIp())
+                        .put("pp", u.getProfilPhoto())
+                ));
+            }
         }
     }
 
