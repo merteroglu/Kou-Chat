@@ -5,7 +5,11 @@
 </head>
 <body>
     <header>
-        <input type='file' id="file-upload" onchange="readURL(this);" />
+        <div class="app-name">KOU CHAT</div>
+        <div class="file-upload">
+            <label for="file-upload" class="file-upload__label">Select Image</label>
+            <input type="file" id="file-upload" class="file-upload__input" onchange="readURL(this);" name="upload">
+        </div>
         <input id="username" placeholder="Username ..." autofocus>
         <button id="connect">Connect</button>
         <button id="disconnect" disabled>Disconnect</button>
