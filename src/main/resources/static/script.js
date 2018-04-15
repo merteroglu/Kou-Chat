@@ -33,14 +33,13 @@ $(document).ready( function() {
 
 
 function connect() {
-    //socket = new WebSocket("ws://"+ location.hostname + ':' + location.port + location.pathname + "chat?username=" + usernameInputEl.value);
 
     if(basePp == undefined){
         basePp = "0000";
     }
 
-    socket = new WebSocket("ws://localhost:8080/" + "chat?username=" + usernameInputEl.value + "&ip=" + ipData.ip  + "&pp=0000");
-
+   // socket = new WebSocket("ws://localhost:8080/" + "chat?username=" + usernameInputEl.value + "&ip=" + ipData.ip  + "&pp=0000");
+    socket = new WebSocket("ws://" + location.hostname + ':' + location.port + location.pathname + "chat?username=" + usernameInputEl.value + "&ip=" + ipData.ip + "&pp=0000");
     socket.binaryType = "blob";
     socket.onopen = socketOnOpen;
     socket.onmessage = socketOnMessage;
@@ -120,8 +119,10 @@ function newUser(data) {
     pName.className = "user-name";
     liEl.id = userInfo.userName;
     liEl.className = "card";
-    liEl.onclick = chatToFn(userInfo.userName);
-    if(userInfo.userName != usernameInputEl.value) liEl.classList.add('hoverable');
+    if(data.state == "Online"){
+        liEl.onclick = chatToFn(userInfo.userName);
+        if(userInfo.userName != usernameInputEl.value) liEl.classList.add('hoverable');
+    }
     ppdiv.appendChild(status);
     ppdiv.appendChild(pName);
     liEl.appendChild(ppdiv);
@@ -179,8 +180,11 @@ function getUserPp(data) {
             pName.className = "user-name";
             liEl.id = username;
             liEl.className = "card";
+
+
             liEl.onclick = chatToFn(data.userName);
             if(data.userName != usernameInputEl.value) liEl.classList.add('hoverable');
+
             ppdiv.appendChild(status);
             ppdiv.appendChild(pName);
             liEl.appendChild(ppdiv);
@@ -228,13 +232,13 @@ function createNewChat(sender, message) {
     if(sender == usernameInputEl.value){
         sender = 'me';
         newChatDivEl.className = "me-message";
+        senderEl.className = "me-message-header";
     }else{
         newChatDivEl.className = "sender-message";
+        senderEl.className = "message-header";
     }
 
-    senderEl.className = "message-header";
     messageEl.className = "message-text";
-
     senderEl.textContent = sender;
     messageEl.textContent = message;
 

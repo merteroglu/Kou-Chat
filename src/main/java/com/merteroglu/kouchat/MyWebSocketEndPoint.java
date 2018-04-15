@@ -54,7 +54,6 @@ public class MyWebSocketEndPoint {
                 .put("state","Online")
         ));
 
-        //TODO PP yoksa kontrolü yap
         for(User user : clients.keySet()){
             if(clients.get(user) == session) continue;
 
