@@ -1,10 +1,17 @@
 package com.merteroglu.kouchat;
 
 import org.json.JSONObject;
+import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+
 import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
 import java.nio.ByteBuffer;
 import java.util.*;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.stream.Collectors;
 
 
@@ -213,5 +220,21 @@ public class MyWebSocketEndPoint {
 
     }
 
+    @Scheduled(fixedRate = 15000)
+    public void checkOnline(){
+        System.out.println("cheking online");
+        for(Session session : clients.values()){
+            try{
+                if(!session.isOpen() && session.getUserProperties().get("state").equals("Online")){
+                    session.getUserProperties().put("state","Offline");
+                    session.close();
+                }else if(session.isOpen() && session.getUserProperties().get("state").equals("Offline")){
+                    session.getUserProperties().put("state","Online");
+                }
+            }catch (Exception e){
+
+            }
+        }
+    }
 
 }
