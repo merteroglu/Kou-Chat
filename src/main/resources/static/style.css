@@ -115,7 +115,7 @@ aside>h5 {
     border-radius: 7px;
     border: 1px solid rgba(0, 40, 100, 0.12);
     font-size: 0pt;
-    height: 92%;
+    height: 85%;
     background-color: #454545;
     background-clip: border-box;
     position: relative;
@@ -141,7 +141,7 @@ aside>h5 {
 }
 
 #dialog>#message-board {
-    height: 85%;
+    height: 80%;
     overflow-y: auto;
 }
 
@@ -181,7 +181,7 @@ aside>h5 {
 }
 
 #dialog>#send {
-    width: 15%;
+    width: 14%;
     height: 8.5%;
     margin: 10px 12px 10px 15px;
     border: 0px;

@@ -1,17 +1,12 @@
 package com.merteroglu.kouchat;
 
 import org.json.JSONObject;
-import org.springframework.context.annotation.Bean;
-import org.springframework.scheduling.TaskScheduler;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
 import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
 import java.nio.ByteBuffer;
 import java.util.*;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.stream.Collectors;
 
 
@@ -52,7 +47,6 @@ public class MyWebSocketEndPoint {
         session.getUserProperties().put(USERNAME_KEY,newUserName);
         session.getUserProperties().put("ip",newIp);
         session.getUserProperties().put("state","Online");
-
 
         session.getBasicRemote().sendText(String.valueOf(new JSONObject()
                 .put("func","newUser")
@@ -171,8 +165,6 @@ public class MyWebSocketEndPoint {
                                 .put("destTo",destination)
                         ));
                     }
-
-
                 }
             }
         }
