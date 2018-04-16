@@ -1,0 +1,9 @@
+= Kou-Chat
+
+== About
+
+A chat web application. Backend java spring boot , frontend html,css and javascript.
+
+== Views
+
+![Views](App-Gif.gif)
