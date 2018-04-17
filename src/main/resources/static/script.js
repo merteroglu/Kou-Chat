@@ -39,7 +39,7 @@ function connect() {
     }
 
    // socket = new WebSocket("ws://localhost:8080/" + "chat?username=" + usernameInputEl.value + "&ip=" + ipData.ip  + "&pp=0000");
-    socket = new WebSocket("ws://" + location.hostname + ':' + location.port + location.pathname + "chat?username=" + usernameInputEl.value + "&ip=" + ipData.ip + "&pp=0000");
+    socket = new WebSocket("ws://" + location.hostname + ':' + location.port + location.pathname + "chat?username=" + usernameInputEl.value + "&ip=" + ipData.ip);
     socket.binaryType = "blob";
     socket.onopen = socketOnOpen;
     socket.onmessage = socketOnMessage;
@@ -136,8 +136,8 @@ function getMessage(sender, message, to) {
     if(sender == usernameInputEl.value){
         var newChatEl = createNewChat(sender,message);
         messageBoardEl.appendChild(newChatEl);
-        if(chatRoom[sender]) chatRoom[sender].push(newChatEl);
-        else chatRoom[sender] = [newChatEl];
+        if(chatRoom[to]) chatRoom[to].push(newChatEl);
+        else chatRoom[to] = [newChatEl];
         return;
     }
 
@@ -154,6 +154,29 @@ function getMessage(sender, message, to) {
     else chatRoom[sender] = [newChatEl];
 
 }
+
+/*function getAllMessages(sender,message) {
+    if(sender == usernameInputEl.value){
+        var newChatEl = createNewChat(sender,message);
+        messageBoardEl.appendChild(newChatEl);
+        if(chatRoom["all"]) chatRoom["all"].push(newChatEl);
+        else chatRoom["all"] = [newChatEl];
+        return;
+    }
+
+    var newChatEl = createNewChat(sender,message);
+
+    if(chatTo == "all"){
+        messageBoardEl.appendChild(newChatEl);
+    }else{
+        var toEl = usernameListEl.querySelector('#' + "all");
+        addCountMessage(toEl);
+    }
+
+    if(chatRoom["all"]) chatRoom["all"].push(newChatEl);
+    else chatRoom["all"] = [newChatEl];
+
+}*/
 
 function getUserPp(data) {
     var sender = data.userName;

@@ -57,6 +57,7 @@ header>button {
 ul {
     list-style: none;
     padding: 10px;
+    padding-top: 0px;
     margin: 5px;
     align-items: center;
 }

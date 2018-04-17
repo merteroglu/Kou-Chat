@@ -20,20 +20,22 @@ public class MyWebSocketEndPoint {
         Map<String,List<String>> parameter = session.getRequestParameterMap();
         List<String> list = parameter.get(USERNAME_KEY);
         List<String> iplist = parameter.get("ip");
-        List<String> ppList = parameter.get("pp");
         String newUserName = list.get(0);
         String newIp = iplist.get(0);
 
 
         User newUser = new User(newUserName,newIp);
 
-        long count = clients.keySet().stream().filter(user -> user.getUserName().equals(newUser.getUserName())).count();
+        long count = clients.keySet().stream().filter(user -> user.getUserName().equals(newUser.getUserName()) && user.getIp().equals(newUser.getIp())).count();
 
         if(count > 0){
             Set<User> keys = clients.keySet();
             for(User u : keys){
                 if(u.getUserName().equals(newUser.getUserName())){
                     try{
+                        if(u.getProfilPhoto().length > 0){
+                            newUser.setProfilPhoto(u.getProfilPhoto());
+                        }
                         clients.remove(u);
                         break;
                     }catch (Exception e){
@@ -127,7 +129,14 @@ public class MyWebSocketEndPoint {
         if(destination.equals("all")){
             for(Session client : clients.values()){
                 if(client.equals(session)) continue;
-                //client.getBasicRemote().sendText("message|" + sender + "|" + messageContent + "|all");
+                if(client.isOpen()){
+                    /*client.getBasicRemote().sendText(String.valueOf(new JSONObject()
+                            .put("func","message")
+                            .put("sender",sender)
+                            .put("messageContent",messageContent)
+                            .put("destTo","all")
+                    ));*/
+                }
             }
         }else{
             Set<User> keys = clients.keySet();
