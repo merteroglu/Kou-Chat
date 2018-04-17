@@ -6,4 +6,4 @@ A chat web application. Backend java spring boot , frontend html,css and javascr
 
 == Views
 
-![Views](App-Gif.gif)
+image::App-Gif.gif[Views]
