@@ -10,8 +10,6 @@ var sendBtnEl = articleEl.querySelector('#send');
 
 var chatToEl = articleEl.querySelector('#chatTo');
 
-var chatToAllEl = document.querySelector('#all');
-
 var chatTo = 'all';
 
 var chatRoom = {
@@ -44,6 +42,12 @@ function connect() {
     socket.onopen = socketOnOpen;
     socket.onmessage = socketOnMessage;
     socket.onclose = socketOnClose;
+    var allChat = document.createElement("li");
+    allChat.id = "all";
+    allChat.className = "card hoverable";
+    allChat.textContent = "All";
+    allChat.onclick = chatToFn('all');
+    usernameListEl.appendChild(allChat);
 }
 
 function disconnect() {
@@ -132,6 +136,11 @@ function newUser(data) {
 
 function getMessage(sender, message, to) {
     to = to || sender;
+    if(to == "all"){
+        getAllMessages(sender,message);
+        return;
+    }
+
 
     if(sender == usernameInputEl.value){
         var newChatEl = createNewChat(sender,message);
@@ -155,7 +164,7 @@ function getMessage(sender, message, to) {
 
 }
 
-/*function getAllMessages(sender,message) {
+function getAllMessages(sender,message) {
     if(sender == usernameInputEl.value){
         var newChatEl = createNewChat(sender,message);
         messageBoardEl.appendChild(newChatEl);
@@ -176,7 +185,7 @@ function getMessage(sender, message, to) {
     if(chatRoom["all"]) chatRoom["all"].push(newChatEl);
     else chatRoom["all"] = [newChatEl];
 
-}*/
+}
 
 function getUserPp(data) {
     var sender = data.userName;
@@ -287,7 +296,6 @@ function addCountMessage(toEl) {
 }
 
 sendBtnEl.onclick = sendMessage;
-chatToAllEl.onclick = chatToFn('all');
 
 function sendMessage() {
     var message = messageInputEl.value;

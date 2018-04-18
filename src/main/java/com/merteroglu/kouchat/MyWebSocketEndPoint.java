@@ -16,13 +16,12 @@ public class MyWebSocketEndPoint {
     private static Map<User,Session> clients = Collections.synchronizedMap(new LinkedHashMap<>());
 
     @OnOpen
-    public void onOpen(Session session,EndpointConfig config) throws Exception{
+    public void onOpen(Session session) throws Exception{
         Map<String,List<String>> parameter = session.getRequestParameterMap();
         List<String> list = parameter.get(USERNAME_KEY);
         List<String> iplist = parameter.get("ip");
         String newUserName = list.get(0);
         String newIp = iplist.get(0);
-
 
         User newUser = new User(newUserName,newIp);
 
@@ -130,12 +129,12 @@ public class MyWebSocketEndPoint {
             for(Session client : clients.values()){
                 if(client.equals(session)) continue;
                 if(client.isOpen()){
-                    /*client.getBasicRemote().sendText(String.valueOf(new JSONObject()
+                    client.getBasicRemote().sendText(String.valueOf(new JSONObject()
                             .put("func","message")
                             .put("sender",sender)
                             .put("messageContent",messageContent)
                             .put("destTo","all")
-                    ));*/
+                    ));
                 }
             }
         }else{
@@ -199,7 +198,6 @@ public class MyWebSocketEndPoint {
         }
     }
 
-
     private void wantToFriend(Session session, String message) {
         String[] data = message.split("\\|");
         String destination = data[1];
@@ -227,13 +225,20 @@ public class MyWebSocketEndPoint {
         for(Session session : clients.values()){
             try{
                 if(!session.isOpen() && session.getUserProperties().get("state").equals("Online")){
-                    session.getUserProperties().put("state","Offline");
                     session.close();
+                    onClose(session);
                 }else if(session.isOpen() && session.getUserProperties().get("state").equals("Offline")){
                     session.getUserProperties().put("state","Online");
+                    onOpen(session);
+                }else if(session.isOpen() && session.getUserProperties().get("state").equals("Online")){
+                    session.getBasicRemote().sendText("test");
                 }
             }catch (Exception e){
+                try {
+                    session.close();
+                } catch (Exception e1) {
 
+                }
             }
         }
     }
