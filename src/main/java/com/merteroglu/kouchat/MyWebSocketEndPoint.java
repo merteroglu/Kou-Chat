@@ -25,15 +25,29 @@ public class MyWebSocketEndPoint {
 
         User newUser = new User(newUserName,newIp);
 
-        long count = clients.keySet().stream().filter(user -> user.getUserName().equals(newUser.getUserName()) && user.getIp().equals(newUser.getIp())).count();
+        long count = clients.keySet().stream().filter(user -> user.getUserName().equalsIgnoreCase(newUser.getUserName()) && user.getIp().equals(newUser.getIp())).count();
+        long count2 = clients.keySet().stream().filter(user -> user.getUserName().equalsIgnoreCase(newUser.getUserName())).count();
+
+        if(count2 > 0 && count == 0){
+            session.getBasicRemote().sendText(String.valueOf(new JSONObject()
+                    .put("func","failNewUser")
+            ));
+            return;
+        }
 
         if(count > 0){
             Set<User> keys = clients.keySet();
             for(User u : keys){
-                if(u.getUserName().equals(newUser.getUserName())){
+                if(u.getUserName().equalsIgnoreCase(newUser.getUserName())){
                     try{
                         if(u.getProfilPhoto().length > 0){
                             newUser.setProfilPhoto(u.getProfilPhoto());
+                        }
+                        if(clients.get(u).isOpen()){
+                            session.getBasicRemote().sendText(String.valueOf(new JSONObject()
+                                    .put("func","failNewUser")
+                            ));
+                            return;
                         }
                         clients.remove(u);
                         break;

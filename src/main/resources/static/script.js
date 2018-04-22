@@ -83,6 +83,7 @@ function socketOnMessage(e) {
     else if(data.func == 'message') getMessage(data.sender,data.messageContent,data.destTo);
     else if(data.func == 'newUserPp') getUserPp(data);
     else if(data.func == 'wantToFriend') wantToFriend(data);
+    else if(data.func == 'failNewUser') failNewUser();
 
 }
 
@@ -373,4 +374,9 @@ function b64toBlob(b64Data, contentType, sliceSize) {
 
     var blob = new Blob(byteArrays, {type: contentType});
     return blob;
+}
+
+function failNewUser() {
+    alert("You cant login with this username");
+    socketOnClose();
 }
