@@ -21,7 +21,7 @@ var socket = undefined;
 connectBtnEl.onclick = connect;
 disconnectBtnEl.onclick = disconnect;
 
-var ipData;
+var ipData = "0000";
 var basePp;
 $(document).ready( function() {
     $.getJSON( "http://ipinfo.io", function(data){
@@ -95,6 +95,10 @@ function socketOnClose(e) {
     messageBoardEl.innerHTML = '';
     chatToEl.innerHTML = 'All';
     usernameListEl.innerHTML = '';
+    chatRoom = {
+        'all' : []
+    };
+    chatTo = 'all';
 }
 
 function newUser(data) {
